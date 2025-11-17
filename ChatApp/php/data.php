@@ -14,13 +14,8 @@ while($row = mysqli_fetch_assoc($query)){
     $offline = ($row['status'] == "Offline now") ? "offline" : "";
     $hid_me = ($outgoing_id == $row['unique_id']) ? "hide" : "";
 
-    if(!empty($row['img'])){
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mime = $finfo->buffer($row['img']);
-        $img_src = "data:{$mime};base64," . base64_encode($row['img']);
-    } else {
-        $img_src = "images/default.png";
-    }
+    // use index.php to display images
+    $img_src = "index.php?user_id=" . $row['unique_id'];
 
     $output .= '<a href="chat.php?user_id='. $row['unique_id'] .'">
                 <div class="content">

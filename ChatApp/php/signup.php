@@ -28,18 +28,13 @@ if(!empty($fname) && !empty($lname) && !empty($email) && !empty($password)) {
 
                 $img_data = file_get_contents($_FILES['image']['tmp_name']); // raw binary
                 $random_id = rand(time(), 100000000);
-                $enc_pass = md5($password); // or use password_hash($password, PASSWORD_BCRYPT)
+                $enc_pass = md5($password); // or password_hash($password, PASSWORD_BCRYPT)
                 $status = "Active now";
 
-                // Use prepared statement to store BLOB correctly
+                // prepared statement for BLOB
                 $stmt = $conn->prepare("INSERT INTO users (unique_id, fname, lname, email, password, img, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                if($stmt === false){
-                    echo "Database error: " . $conn->error;
-                    exit;
-                }
-
                 $stmt->bind_param("issssss", $random_id, $fname, $lname, $email, $enc_pass, $img_data, $status);
-                $stmt->send_long_data(5, $img_data); // img is the 6th param (0-indexed)
+                $stmt->send_long_data(5, $img_data); // BLOB parameter
                 $execute = $stmt->execute();
 
                 if($execute){

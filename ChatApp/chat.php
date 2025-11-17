@@ -20,7 +20,7 @@
           }
         ?>
         <a href="users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
-        <img src="php/images/<?php echo $row['img']; ?>" alt="">
+        <img src="index.php?user_id=<?php echo $row['unique_id']; ?>" alt="">
         <div class="details">
           <span><?php echo $row['fname']. " " . $row['lname'] ?></span>
           <p><?php echo $row['status']; ?></p>
