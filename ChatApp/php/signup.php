@@ -5,11 +5,12 @@ include_once "config.php";
 $fname = mysqli_real_escape_string($conn, $_POST['fname']);
 $lname = mysqli_real_escape_string($conn, $_POST['lname']);
 $email = mysqli_real_escape_string($conn, $_POST['email']);
-$password = mysqli_real_escape_string($conn, $_POST['password']);
+$password = $_POST['password']; // keep raw for hashing
 
 if(!empty($fname) && !empty($lname) && !empty($email) && !empty($password)){
 
     if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+
         $sql = mysqli_query($conn, "SELECT email FROM users WHERE email = '{$email}'");
         if(mysqli_num_rows($sql) > 0){
             echo "$email - This email already exists!";
@@ -17,15 +18,15 @@ if(!empty($fname) && !empty($lname) && !empty($email) && !empty($password)){
         }
 
         if(isset($_FILES['image']) && $_FILES['image']['error'] === 0){
-            $img_type = $_FILES['image']['type'];
             $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
+            $img_type = $_FILES['image']['type'];
 
             if(in_array($img_type, $allowed_types)){
                 $img_data = file_get_contents($_FILES['image']['tmp_name']);
-                $img_data = mysqli_real_escape_string($conn, $img_data);
+                $img_data = mysqli_real_escape_string($conn, $img_data); // keep for now
 
                 $random_id = rand(time(), 100000000);
-                $enc_pass = md5($password);
+                $enc_pass = md5($password); // can change to password_hash($password, PASSWORD_BCRYPT)
                 $status = "Active now";
 
                 $insert_query = mysqli_query($conn, 
@@ -39,9 +40,11 @@ if(!empty($fname) && !empty($lname) && !empty($email) && !empty($password)){
                 } else {
                     echo "Something went wrong. Please try again!";
                 }
+
             } else {
                 echo "Please upload a valid image file (jpg, jpeg, png)!";
             }
+
         } else {
             echo "Image file is required!";
         }
