@@ -14,15 +14,20 @@ while($row = mysqli_fetch_assoc($query)){
     $offline = ($row['status'] == "Offline now") ? "offline" : "";
     $hid_me = ($outgoing_id == $row['unique_id']) ? "hide" : "";
 
-    // encode BLOB image
-    $img_src = !empty($row['img']) ? "data:image/jpeg;base64," . base64_encode($row['img']) : "images/default.png";
+    if(!empty($row['img'])){
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->buffer($row['img']);
+        $img_src = "data:{$mime};base64," . base64_encode($row['img']);
+    } else {
+        $img_src = "images/default.png";
+    }
 
     $output .= '<a href="chat.php?user_id='. $row['unique_id'] .'">
                 <div class="content">
                     <img src="'. $img_src .'" alt="">
                     <div class="details">
-                        <span>'. $row['fname']. " " . $row['lname'] .'</span>
-                        <p>'. $you . $msg .'</p>
+                        <span>'. htmlspecialchars($row['fname']. " " . $row['lname']) .'</span>
+                        <p>'. htmlspecialchars($you . $msg) .'</p>
                     </div>
                 </div>
                 <div class="status-dot '. $offline .'"><i class="fas fa-circle"></i></div>
